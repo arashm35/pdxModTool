@@ -1,5 +1,6 @@
 import pathlib
 import re
+from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from pdxModTool.cli import parser, parser_build, parser_install
@@ -25,8 +26,13 @@ class PDXMod:
         self.modName = None
         self.supportedVersion = None
 
-    def build(self, mod_dir, desc=False):
-        with ZipFile(mod_dir / f'{self.modName}.zip', 'w', ZIP_DEFLATED) as zipFile:
+    def build(self, mod_dir, desc=False, backup=False):
+        mod_path = mod_dir / f'{self.modName}.zip'
+        if backup and mod_path.exists():
+            print(f'{self.modName}.zip already exists in {mod_dir}.')
+            mod_path.rename(f'{mod_path.stem}_{datetime.timestamp(datetime.now())}{mod_path.suffix}')
+
+        with ZipFile(mod_path, 'w', ZIP_DEFLATED) as zipFile:
             for file in self.zipFiles:
                 file: pathlib.Path
                 zipFile.write(file, file.relative_to(self.root_path))
@@ -103,7 +109,7 @@ def get_mod_dir(game):
 def install(args, mod: PDXMod):
     print(f'install {mod.modName} to {args.game} mod folder')
     mod_dir = get_mod_dir(args.game) / 'mod'
-    mod.build(mod_dir, desc=True)
+    mod.build(mod_dir, desc=True, backup=True)
 
 
 def main():
