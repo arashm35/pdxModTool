@@ -28,6 +28,7 @@ class PDXMod:
 
     def build(self, mod_dir, desc=False, backup=False):
         mod_path = mod_dir / f'{self.modName}.zip'
+
         if backup and mod_path.exists():
             print(f'{self.modName}.zip already exists in {mod_dir}.')
             mod_path.replace(mod_dir / f'{mod_path.stem}_{datetime.timestamp(datetime.now())}{mod_path.suffix}')
@@ -38,7 +39,7 @@ class PDXMod:
                 zipFile.write(file, file.relative_to(self.root_path))
 
         if desc:
-            desc_path = mod_dir.parent / f'{self.modName}.mod'
+            desc_path = mod_dir / f'{self.modName}.mod'
             with desc_path.open('w') as desc_file:
                 desc_file.write(self.descriptor)
                 desc_file.write(f'\narchive=mod/{self.modName}.zip')
@@ -110,7 +111,7 @@ def get_mod_dir(game):
 def install(args, mod: PDXMod):
     print(f'install {mod.modName} to {args.game} mod folder')
     mod_dir = get_mod_dir(args.game) / 'mod'
-    mod.build(mod_dir, desc=True, backup=True)
+    mod.build(mod_dir, desc=True, backup=args.backup)
 
 
 def main():

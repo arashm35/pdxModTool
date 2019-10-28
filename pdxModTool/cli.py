@@ -38,9 +38,15 @@ parser_install = subparsers.add_parser(
     help='install mod into game mod folder'
 )
 parser_install.add_argument(
-    '-g', '--game',
+    'game',
     metavar='',
     choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'],
-    type=str,
+    action='store',
+    help='set pdx game title to install mods for.'
+)
+parser_install.add_argument(
+    '-b', '--backup',
+    # metavar='',
+    action='store_true',
     help='set pdx game title to install mods for.'
 )
