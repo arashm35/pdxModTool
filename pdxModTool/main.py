@@ -96,12 +96,13 @@ def get_doc_dir():
 
 def get_mod_dir(game):
     pdx_dir = get_doc_dir() / 'Paradox Interactive'
-    if (modDir := pdx_dir / ({
+    pdx_dict = {
         'eu4': 'Europa Universalis IV',
         'ir': 'Imperator',
         'hoi4': 'Hearts of Iron IV',
         'stellaris': 'Stellaris'
-    }).get(game)).exists():
+    }
+    if (modDir := pdx_dir / pdx_dict.get(game)).exists():
         return modDir
     raise ModFolderNotFound(game)
 
