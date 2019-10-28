@@ -81,10 +81,29 @@ def build(args, mod: PDXMod):
     mod.build(output_dir, desc=args.descriptor)
 
 
+def get_doc_dir():
+    if (docDir := pathlib.Path().home() / 'OneDrive/Documents').exists():
+        return docDir
+    else:
+        return pathlib.Path().home() / 'Documents'
+
+
+def get_mod_dir(game):
+    pdx_dir = get_doc_dir() / 'Paradox Interactive'
+    if (modDir := pdx_dir / {
+        'eu4': 'Europa Universalis IV',
+        'ir': 'Imperator',
+        'hoi4': 'Hearts of Iron IV',
+        'stellaris': 'Stellaris'
+    }.get(game)).exists():
+        return modDir
+    raise ModFolderNotFound(game)
+
+
 def install(args, mod: PDXMod):
     print(f'install {mod.modName} to {args.game} mod folder')
-    print(args.path)
-    return
+    mod_dir = get_mod_dir(args.game) / 'mod'
+    mod.build(mod_dir, desc=True)
 
 
 def main():
