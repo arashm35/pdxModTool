@@ -10,6 +10,12 @@ IGNORE = [
 ]
 
 
+class ModFolderNotFound(Exception):
+
+    def __init__(self, game):
+        print(f'mod folder not found for <{game}> game.')
+
+
 class PDXMod:
 
     def __init__(self):
@@ -19,14 +25,14 @@ class PDXMod:
         self.modName = None
         self.supportedVersion = None
 
-    def build(self, path, desc=False):
-        with ZipFile(path, 'w', ZIP_DEFLATED) as zipFile:
+    def build(self, mod_dir, desc=False):
+        with ZipFile(mod_dir / f'{self.modName}.zip', 'w', ZIP_DEFLATED) as zipFile:
             for file in self.zipFiles:
                 file: pathlib.Path
                 zipFile.write(file, file.relative_to(self.root_path))
 
         if desc:
-            desc_path = path.parent / f'{self.modName}.mod'
+            desc_path = mod_dir.parent / f'{self.modName}.mod'
             with desc_path.open('w') as desc_file:
                 desc_file.write(self.descriptor)
                 desc_file.write(f'\narchive=mod/{self.modName}.zip')
@@ -69,11 +75,10 @@ class Config:
 
 
 def build(args, mod: PDXMod):
-    output_path = args.output if args.output else args.path
-    output_path = output_path / f'{mod.modName}.zip'
+    output_dir = args.output if args.output else args.path
 
-    print(f'building {mod.modName} to {output_path}')
-    mod.build(output_path, desc=args.descriptor)
+    print(f'building {mod.modName} to {output_dir}')
+    mod.build(output_dir, desc=args.descriptor)
 
 
 def install(args, mod: PDXMod):
