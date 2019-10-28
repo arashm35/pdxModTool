@@ -48,5 +48,5 @@ parser_install.add_argument(
     '-b', '--backup',
     # metavar='',
     action='store_true',
-    help='set pdx game title to install mods for.'
+    help='set flag for backup.'
 )
