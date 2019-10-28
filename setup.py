@@ -7,7 +7,7 @@ setup(
         ],
     },
     name='pdxModTool',
-    version='0.9',
+    version='0.91',
     packages=['pdxModTool'],
     url='',
     license='',
