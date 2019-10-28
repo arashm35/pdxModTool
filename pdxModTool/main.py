@@ -30,7 +30,7 @@ class PDXMod:
         mod_path = mod_dir / f'{self.modName}.zip'
         if backup and mod_path.exists():
             print(f'{self.modName}.zip already exists in {mod_dir}.')
-            mod_path.rename(f'{mod_path.stem}_{datetime.timestamp(datetime.now())}{mod_path.suffix}')
+            mod_path.replace(mod_dir / f'{mod_path.stem}_{datetime.timestamp(datetime.now())}{mod_path.suffix}')
 
         with ZipFile(mod_path, 'w', ZIP_DEFLATED) as zipFile:
             for file in self.zipFiles:
