@@ -24,6 +24,9 @@ class Server:
     def address(self):
         return self._host_ip, self._port
 
+    def close(self):
+        self._local_socket.close()
+
     def start(self):
         logging.info(f'listening on {self._host_ip}:{self._port}')
         self._local_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,10 +34,15 @@ class Server:
         self._local_socket.listen()
 
         while True:
-            client_socket, client_addr = self._local_socket.accept()
-            conn = threading.Thread(target=self.handle, args=(client_socket, client_addr,))
-            conn.daemon = True
-            conn.start()
+            try:
+                client_socket, client_addr = self._local_socket.accept()
+                conn = threading.Thread(target=self.handle, args=(client_socket, client_addr,))
+                conn.daemon = True
+                conn.start()
+            except KeyboardInterrupt:
+                break
+            finally:
+                self.close()
 
     def handle(self, client_socket: socket.socket, addr):
         logging.info(f'client connected from {addr}')

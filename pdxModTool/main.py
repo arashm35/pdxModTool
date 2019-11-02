@@ -3,7 +3,7 @@ import logging
 from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
-from pdxModTool.util import get_mod_dir
+from pdxModTool.util import get_mod_dir, get_enabled_mod_paths
 
 
 def build(args):
@@ -12,7 +12,6 @@ def build(args):
     if args.path.exists:
         mod.read_from_dir(args.path)
 
-    print(f'building {mod.modName} to {output_dir}')
     mod.build(output_dir, desc=args.descriptor)
 
 
@@ -21,14 +20,16 @@ def install(args):
     if args.path.exists:
         mod.read_from_dir(args.path)
 
-    print(f'install {mod.modName} to {args.game} mod folder')
     mod_dir = get_mod_dir(args.game)
     mod.build(mod_dir, desc=True, backup=args.backup)
 
 
 def send(args):
-    print(args)
     server = Server(args.ip, args.port)
+
+    for path in get_enabled_mod_paths(args.game):
+        server.files.append(path)
+    logging.info(f'preparing {len(server.files)} to send')
     server.start()
 
 

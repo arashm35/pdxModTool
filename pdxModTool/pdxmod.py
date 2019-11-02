@@ -1,3 +1,4 @@
+import logging
 import pathlib
 import re
 from datetime import datetime
@@ -26,6 +27,7 @@ class PDXMod:
             print(f'{self.modName}.zip already exists in {mod_dir}.')
             mod_path.replace(mod_dir / f'{mod_path.stem}_{datetime.timestamp(datetime.now())}{mod_path.suffix}')
 
+        logging.info(f'building {self.modName} to {mod_path}')
         with ZipFile(mod_path, 'w', ZIP_DEFLATED) as zipFile:
             for file in self.zipFiles:
                 file: pathlib.Path
@@ -56,8 +58,8 @@ class PDXMod:
         if not descriptor_path.exists():
             raise LookupError
 
-        with descriptor_path.open('r') as file:
-            return file.read()
+        with descriptor_path.open('r') as desc_file:
+            return desc_file.read()
 
     def populate(self):
         if not self.descriptor:
