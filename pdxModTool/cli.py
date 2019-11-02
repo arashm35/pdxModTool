@@ -32,6 +32,11 @@ parser.add_argument(
     action='store_true',
     help='show version'
 )
+parser.add_argument(
+    '-d', '--debug',
+    action='store_true',
+    help='enable debug mode'
+)
 
 # build arguments
 parser_build.add_argument(

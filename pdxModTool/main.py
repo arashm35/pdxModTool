@@ -51,6 +51,8 @@ def main():
     parser_recv.set_defaults(func=recv)
 
     args = parser.parse_args()
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
     if args.version:
         logging.info(f'pdxModTool v{CURRENT_VERSION} "{VERSION_NAME}"')
 
