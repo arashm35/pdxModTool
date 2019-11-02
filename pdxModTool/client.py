@@ -13,6 +13,7 @@ class Client:
     def __init__(self):
         self._local_socket = None
         self.game = None
+        self.desc_paths = []
 
     def connect(self, server_ip, port=None):
         if not port:
@@ -60,6 +61,9 @@ class Client:
                     break
                 inFile.write(bytes_read)
                 progress.update(len(bytes_read))
+
+        if path.with_suffix('.mod'):
+            self.desc_paths.append(f'mod/{path.name}')
 
     def get_header(self):
         return self._local_socket.recv(config.HEADER_SIZE).decode()

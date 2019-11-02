@@ -30,6 +30,17 @@ def get_mod_dir(game):
     return get_game_dir(game) / 'mod'
 
 
+def update_dlc_load(game, desc_paths):
+    dlc_load_path = get_game_dir(game) / 'dlc_load.json'
+    with dlc_load_path.open('r') as json_file:
+        dlc_load = json.load(json_file)
+
+    dlc_load['enabled_mods'] = desc_paths
+
+    with dlc_load_path.open('w') as json_file:
+        json.dump(dlc_load, json_file)
+
+
 def get_enabled_mods_desc(game):
     dlc_load_path = get_game_dir(game) / 'dlc_load.json'
     with dlc_load_path.open('r') as json_file:
