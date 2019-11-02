@@ -1,6 +1,7 @@
 import logging
 
 from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv
+from pdxModTool.client import Client
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
 from pdxModTool.util import get_mod_dir, get_enabled_mod_paths
@@ -34,7 +35,8 @@ def send(args):
 
 
 def recv(args):
-    pass
+    client = Client()
+    client.connect(args.server_ip, args.port)
 
 
 def main():

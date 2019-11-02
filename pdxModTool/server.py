@@ -62,8 +62,8 @@ class Server:
 
     @staticmethod
     def send_file(client_socket, path: pathlib.Path):
-        name_header = make_header(path.name).encode()
-        size_header = make_header(path.lstat().st_size).encode()
+        name_header = make_header(path.name)
+        size_header = make_header(path.lstat().st_size)
         client_socket.sendall(name_header + size_header)  # TODO: potential fuck up, separate
 
         progress = tqdm(range(int(size_header)), f"Sending {path.as_posix()}", unit='B', unit_scale=True,
