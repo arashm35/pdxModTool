@@ -37,7 +37,7 @@ class PDXMod:
             desc_path = mod_dir / f'{self.modName}.mod'
             with desc_path.open('w') as desc_file:
                 desc_file.write(self.descriptor)
-                desc_file.write(f'\narchive=mod/{self.modName}.zip')
+                desc_file.write(f'\narchive="mod/{self.modName}.zip"')
 
     def read_from_dir(self, path: pathlib.Path):
         self.descriptor = self.read_descriptor(path)
