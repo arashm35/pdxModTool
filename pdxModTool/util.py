@@ -11,8 +11,9 @@ def make_backup(path):
 
 
 def get_doc_dir():
-    if (docDir := pathlib.Path().home() / 'OneDrive/Documents').exists():
-        return docDir
+    doc_dir = pathlib.Path().home() / 'OneDrive/Documents'
+    if (doc_dir / 'Paradox Interactive').exists():
+        return doc_dir
     else:
         return pathlib.Path().home() / 'Documents'
 
