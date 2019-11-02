@@ -47,7 +47,7 @@ def update(args):
     try:
         subprocess.check_call(
             [
-                'pipx', 'upgrade', '--spec',
+                'py', '-m', 'pipx', 'upgrade', '--spec',
                 f'git+https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool', 'pdxModTool'
             ]
         )
