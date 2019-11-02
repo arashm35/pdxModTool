@@ -14,6 +14,7 @@ class PDXMod:
     def __init__(self):
         self.root_path = None
         self.zipFiles = []
+        self.archive_path = None
         self.descriptor = None
         self.modName = None
         self.supportedVersion = None
@@ -53,7 +54,7 @@ class PDXMod:
         descriptor_path = path / 'descriptor.mod'
 
         if not descriptor_path.exists():
-            raise FileNotFoundError
+            raise LookupError
 
         with descriptor_path.open('r') as file:
             return file.read()

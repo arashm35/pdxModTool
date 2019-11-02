@@ -13,5 +13,5 @@ setup(
     license='',
     author='Arash',
     author_email='',
-    description='paradox mod tool'
+    description='paradox mod tool', install_requires=['tqdm']
 )

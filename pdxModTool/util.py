@@ -1,5 +1,6 @@
 import pathlib
 
+from pdxModTool import config
 from pdxModTool.exception import ModFolderNotFound
 
 
@@ -21,3 +22,7 @@ def get_mod_dir(game):
     if (modDir := pdx_dir / pdx_dict.get(game)).exists():
         return modDir / 'mod'
     raise ModFolderNotFound(game)
+
+
+def make_header(msg):
+    return f'{msg:<{config.HEADER_SIZE}}'

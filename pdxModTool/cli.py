@@ -57,7 +57,7 @@ parser_install.add_argument(
 )
 parser_install.add_argument(
     'game',
-    metavar='',
+    metavar='game',
     choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'],
     action='store',
     help='set pdx game title to install mods for.'
@@ -70,7 +70,7 @@ parser_install.add_argument(
 
 # send arguments
 parser_send.add_argument(
-    '-i', '-ip',
+    '-i', '--ip',
     metavar='',
     action='store',
     help='set server ip. default="0.0.0.0".'
@@ -84,7 +84,7 @@ parser_send .add_argument(
 )
 parser_send.add_argument(
     'game',
-    metavar='',
+    metavar='game',
     choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'],
     action='store',
     help='set pdx game title to send mods for.'

@@ -16,6 +16,8 @@ def install(args, mod: PDXMod):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
+
     parser_build.set_defaults(func=build)
     parser_install.set_defaults(func=install)
 
