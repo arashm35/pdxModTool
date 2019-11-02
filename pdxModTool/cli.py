@@ -122,8 +122,8 @@ parser_recv.add_argument(
 
 # update arguments
 parser_update.add_argument(
-    '-b', '--branch',
-    metavar='',
+    'branch',
+    metavar='branch',
     action='store',
     default='',
     type=str,
