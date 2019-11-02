@@ -25,15 +25,15 @@ class Client:
         self.make_connection()
 
     def make_connection(self):
-        header = self._local_socket.recv(config.HEADER_SIZE).decode()
+        header = self.get_header()
         logging.debug(f'received header: {header}')
 
         for i in range(int(header)):
             self.receive_file()
 
     def receive_file(self):
-        name_header = self._local_socket.recv(config.HEADER_SIZE).decode()
-        size_header = self._local_socket.recv(config.HEADER_SIZE).decode()
+        name_header = self.get_header()
+        size_header = self.get_header()
         logging.debug(f'received file header: {name_header, size_header}')
 
         path = pathlib.Path(f'in/{name_header}')
@@ -51,3 +51,6 @@ class Client:
                     break
                 inFile.write(bytes_read)
                 progress.update(len(bytes_read))
+
+    def get_header(self):
+        return self._local_socket.recv(config.HEADER_SIZE).decode()
