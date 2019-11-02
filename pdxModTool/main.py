@@ -46,7 +46,7 @@ def recv(args):
 def update(args):
     subprocess.check_call(
         [
-            'pipx', 'upgrade', '-e', '--spec',
+            'pipx', 'upgrade', '--spec',
             f'git+https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool', 'pdxModTool'
         ]
     )
