@@ -92,10 +92,10 @@ parser_send.add_argument(
 
 # recv arguments
 parser_recv.add_argument(
-    '-i', '-ip',
-    metavar='',
+    'server_ip',
+    metavar='server_ip',
     action='store',
-    help='set server ip. default="0.0.0.0".'
+    help='set target server ip. '
 )
 parser_recv.add_argument(
     '-p', '--port',

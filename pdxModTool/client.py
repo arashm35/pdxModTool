@@ -11,8 +11,12 @@ class Client:
 
     def __init__(self):
         self._local_socket = None
+        self._game = None
 
-    def connect(self, server_ip, port):
+    def connect(self, server_ip, port=None):
+        if not port:
+            port = config.default_port
+
         logging.info(f'connecting to server at {server_ip}:{port}')
         self._local_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
