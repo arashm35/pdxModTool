@@ -48,7 +48,7 @@ def recv(args):
 
 def update(args):
     try:
-        venv_dir = pathlib.Path().home() / '.local/pipx/venvs/pdxModTool/Scripts'
+        venv_dir = pathlib.Path(sys.executable).parent
         subprocess.Popen(
             [
                 f'{venv_dir}/python.exe', '-m',
