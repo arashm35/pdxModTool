@@ -53,7 +53,7 @@ def update(args):
                 'python.exe', '-m', 'pipx', 'upgrade', '--spec',
                 f'git+https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool', 'pdxModTool'
             ],
-            cwd=(pathlib.Path().home() / '.local').as_posix(),
+            cwd=pathlib.Path(sys.executable).parent,
             executable=sys.executable,
             shell=True
         )
