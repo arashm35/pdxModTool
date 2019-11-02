@@ -1,7 +1,7 @@
 import logging
 import pathlib
 import socket
-import threading
+# import threading
 
 from tqdm import tqdm
 
@@ -10,7 +10,7 @@ from pdxModTool.util import make_header
 
 
 class Server:
-    LOCK = threading.Lock()
+    # LOCK = threading.Lock()
 
     def __init__(self, game, host_ip=None, port=None):
         self._local_socket: socket.socket = None
@@ -37,9 +37,10 @@ class Server:
         while True:
             try:
                 client_socket, client_addr = self._local_socket.accept()
-                conn = threading.Thread(target=self.handle, args=(client_socket, client_addr,))
-                conn.daemon = True
-                conn.start()
+                self.handle(client_socket, client_addr)
+                # conn = threading.Thread(target=self.handle, args=(client_socket, client_addr,))
+                # conn.daemon = True
+                # conn.start()
             except KeyboardInterrupt:
                 break
             finally:
@@ -47,13 +48,13 @@ class Server:
 
     def handle(self, client_socket: socket.socket, addr):
         logging.info(f'client connected from {addr}')
-        self.LOCK.acquire()
+        # self.LOCK.acquire()
         try:
             self.make_connection(client_socket)
             for path in self.files:
                 self.send_file(client_socket, path)
         finally:
-            self.LOCK.release()
+            # self.LOCK.release()
             client_socket.close()
 
     def make_connection(self, client_socket):
