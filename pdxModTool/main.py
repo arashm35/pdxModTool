@@ -1,5 +1,4 @@
 import logging
-import os
 import pathlib
 import subprocess
 import sys
@@ -48,10 +47,8 @@ def recv(args):
 
 def update(args):
     venv_path = pathlib.Path(sys.executable)
-    print(venv_path)
-    for x in os.environb['Path'].split(';'):
-        print(x)
     uri = f'https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool'
+    print(venv_path)
     subprocess.Popen([venv_path.as_posix(), '-m', 'pip', 'install', '-U', '-e', f'git+{uri}'])
 
 
