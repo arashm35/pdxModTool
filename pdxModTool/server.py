@@ -60,18 +60,25 @@ class Server:
 
     def make_connection(self, client_socket):
         header = make_header(len(self.files), self._game)
+        logging.debug(f'send header: {header}')
         client_socket.sendall(header)
 
     @staticmethod
     def send_file(client_socket, path: pathlib.Path):
         name_header = make_header(path.name)
         size_header = make_header(path.lstat().st_size)
+        logging.debug(f'send file header: {name_header, size_header}')
         client_socket.sendall(name_header + size_header)  # TODO: potential fuck up, separate
 
         progress = tqdm(range(int(size_header)), f"Sending {path.as_posix()}", unit='B', unit_scale=True,
                         unit_divisor=1024)
+        size = int(size_header)
+        size_sent = 0
         with path.open('rb') as outFile:
             for _ in progress:
+                buffer_size = config.BUFFER_SIZE if config.BUFFER_SIZE < size - size_sent else size - size_sent
+                # if size_sent == size:
+                #     break
                 bytes_read = outFile.read(config.BUFFER_SIZE)
                 if not bytes_read:
                     break

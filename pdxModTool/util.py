@@ -9,6 +9,7 @@ from pdxModTool.exceptions import ModFolderNotFound
 def make_backup(path):
     pass
 
+
 def get_doc_dir():
     if (docDir := pathlib.Path().home() / 'OneDrive/Documents').exists():
         return docDir
@@ -61,11 +62,11 @@ def get_mod_path(game, desc_path: pathlib.Path):
     with desc_path.open('r') as desc_file:
         desc = desc_file.read()
 
-        if archive_match := re.search(r'archive="(.*)"', desc).group(1):
-            return resolve_path(archive_match)
+        if archive_match := re.search(r'archive="(.*)"', desc):
+            return resolve_path(archive_match.group(1))
 
-        if path_match := re.search(r'path="(.*)"', desc).group(1):
-            return resolve_path(path_match)
+        if path_match := re.search(r'path="(.*)"', desc):
+            return resolve_path(path_match.group(1))
 
     raise FileNotFoundError
 

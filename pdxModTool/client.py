@@ -31,7 +31,7 @@ class Client:
         self.__make_connection()
 
     def __make_connection(self):
-        header = self.get_header()
+        header = self.get_header().strip()
         logging.debug(f'received header: {header}')
         count, self.game = header.split(config.SEPARATOR)
 
@@ -45,7 +45,7 @@ class Client:
         size_header = self.get_header()
         logging.debug(f'received file header: {name_header, size_header}')
 
-        path: pathlib.Path = get_mod_dir(self.game) / name_header.strip()
+        path: pathlib.Path = get_mod_dir(self.game) / 'down' / name_header.strip()
         if path.exists():
             make_backup(path)
 
@@ -59,15 +59,18 @@ class Client:
         with path.open('wb') as inFile:
             for _ in progress:
                 buffer_size = config.BUFFER_SIZE if config.BUFFER_SIZE < size - size_received else size - size_received
+                # if size_received == size:
+                #     break
                 bytes_read = self._local_socket.recv(buffer_size)
-                size_received += len(bytes_read)
                 if not bytes_read:
                     break
+                size_received += len(bytes_read)
+
                 inFile.write(bytes_read)
                 progress.update(len(bytes_read))
 
-        if path.with_suffix('.mod'):
+        if path.suffix == '.mod':
             self.desc_paths.append(f'mod/{path.name}')
 
     def get_header(self):
-        return self._local_socket.recv(config.HEADER_SIZE).decode().strip()
+        return self._local_socket.recv(config.HEADER_SIZE).decode()

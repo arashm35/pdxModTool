@@ -39,12 +39,11 @@ def send(args):
 def recv(args):
     client = Client()
     client.connect(args.server_ip, args.port)
+    # print(client.desc_paths)
     update_dlc_load(client.game, client.desc_paths)
 
 
 def main():
-
-
     parser_build.set_defaults(func=build)
     parser_install.set_defaults(func=install)
     parser_send.set_defaults(func=send)
