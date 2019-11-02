@@ -12,10 +12,11 @@ from pdxModTool.util import make_header
 class Server:
     LOCK = threading.Lock()
 
-    def __init__(self, host_ip=None, port=None):
+    def __init__(self, game, host_ip=None, port=None):
         self._local_socket: socket.socket = None
         self._host_ip = host_ip if host_ip else config.localHost
         self._port = port if port else config.default_port
+        self._game = game
 
         self._connections = []
         self.files = []
@@ -56,8 +57,8 @@ class Server:
             client_socket.close()
 
     def make_connection(self, client_socket):
-        header = make_header(len(self.files))
-        client_socket.sendall(header.encode())
+        header = make_header(len(self.files), self._game)
+        client_socket.sendall(header)
 
     @staticmethod
     def send_file(client_socket, path: pathlib.Path):

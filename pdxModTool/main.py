@@ -25,7 +25,7 @@ def install(args):
 
 
 def send(args):
-    server = Server(args.ip, args.port)
+    server = Server(args.game, args.ip, args.port)
 
     for path in get_enabled_mod_paths(args.game):
         server.files.append(path)

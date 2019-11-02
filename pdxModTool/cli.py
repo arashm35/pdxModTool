@@ -70,24 +70,24 @@ parser_install.add_argument(
 
 # send arguments
 parser_send.add_argument(
-    '-i', '--ip',
-    metavar='',
-    action='store',
-    help='set server ip. default="0.0.0.0".'
-)
-parser_send .add_argument(
-    '-p', '--port',
-    metavar='',
-    action='store',
-    type=int,
-    help='set server port. default=65432.'
-)
-parser_send.add_argument(
     'game',
     metavar='game',
     choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'],
     action='store',
     help='set pdx game title to send mods for.'
+)
+parser_send.add_argument(
+    '-i', '--ip',
+    metavar='',
+    action='store',
+    help='set server ip. default="0.0.0.0".'
+)
+parser_send.add_argument(
+    '-p', '--port',
+    metavar='',
+    action='store',
+    type=int,
+    help='set server port. default=65432.'
 )
 
 # recv arguments

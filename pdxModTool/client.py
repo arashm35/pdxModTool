@@ -5,13 +5,14 @@ import socket
 from tqdm import tqdm
 
 from pdxModTool import config
+from pdxModTool.util import get_mod_dir
 
 
 class Client:
 
     def __init__(self):
         self._local_socket = None
-        self._game = None
+        self.game = None
 
     def connect(self, server_ip, port=None):
         if not port:
@@ -26,21 +27,25 @@ class Client:
             logging.info(f'No connection could be made to {server_ip}, {port}')
             return
 
-        self.make_connection()
+        self.__make_connection()
 
-    def make_connection(self):
+    def __make_connection(self):
         header = self.get_header()
         logging.debug(f'received header: {header}')
+        count, self.game = header.split(config.SEPARATOR)
 
-        for i in range(int(header)):
-            self.receive_file()
+        for i in range(int(count)):
+            self.__receive_file()
 
-    def receive_file(self):
+        self._local_socket.close()
+
+    def __receive_file(self):
         name_header = self.get_header()
         size_header = self.get_header()
         logging.debug(f'received file header: {name_header, size_header}')
 
-        path = pathlib.Path(f'in/{name_header}')
+        path: pathlib.Path = get_mod_dir(self.game) / name_header
+
         progress = tqdm(range(int(size_header)), f"Receiving {name_header}", unit="B", unit_scale=True,
                         unit_divisor=1024)
         size = int(size_header)

@@ -1,4 +1,5 @@
 BUFFER_SIZE = 4096
 HEADER_SIZE = 64
+SEPARATOR = '<SEPARATOR>'
 localHost = '0.0.0.0'
 default_port = 65432
