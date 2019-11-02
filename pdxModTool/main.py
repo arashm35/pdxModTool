@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 import sys
 
@@ -43,9 +44,11 @@ def recv(args):
     client.connect(args.server_ip, args.port)
     update_dlc_load(client.game, client.desc_paths)
 
+
 def update(args):
-    subprocess.check_call([sys.executable, '-m', 'pipx', 'upgrade', '--spec',
+    subprocess.check_call(['pipx', 'upgrade', '--spec',
                            f'git+https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool', 'pdxModTool'])
+    os.execv(sys.executable, sys.argv)
 
 
 def main():
