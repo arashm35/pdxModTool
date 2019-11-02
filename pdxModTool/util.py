@@ -6,6 +6,9 @@ from pdxModTool import config
 from pdxModTool.exceptions import ModFolderNotFound
 
 
+def make_backup(path):
+    pass
+
 def get_doc_dir():
     if (docDir := pathlib.Path().home() / 'OneDrive/Documents').exists():
         return docDir

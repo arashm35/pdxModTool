@@ -43,7 +43,7 @@ def recv(args):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+
 
     parser_build.set_defaults(func=build)
     parser_install.set_defaults(func=install)
@@ -53,6 +53,8 @@ def main():
     args = parser.parse_args()
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
     if args.version:
         logging.info(f'pdxModTool v{CURRENT_VERSION} "{VERSION_NAME}"')
 

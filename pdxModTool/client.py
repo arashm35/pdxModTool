@@ -5,7 +5,7 @@ import socket
 from tqdm import tqdm
 
 from pdxModTool import config
-from pdxModTool.util import get_mod_dir
+from pdxModTool.util import get_mod_dir, make_backup
 
 
 class Client:
@@ -45,7 +45,10 @@ class Client:
         size_header = self.get_header()
         logging.debug(f'received file header: {name_header, size_header}')
 
-        path: pathlib.Path = get_mod_dir(self.game) / 'down' / name_header.strip()
+        path: pathlib.Path = get_mod_dir(self.game) / name_header.strip()
+        if path.exists():
+            make_backup(path)
+
         logging.debug(f'download file to {path}')
 
         progress = tqdm(range(int(size_header)), f"Receiving {name_header}", unit="B", unit_scale=True,
@@ -67,4 +70,4 @@ class Client:
             self.desc_paths.append(f'mod/{path.name}')
 
     def get_header(self):
-        return self._local_socket.recv(config.HEADER_SIZE).decode()
+        return self._local_socket.recv(config.HEADER_SIZE).decode().strip()
