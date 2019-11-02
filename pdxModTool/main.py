@@ -1,7 +1,9 @@
 import logging
+import subprocess
+import sys
 
 from pdxModTool import CURRENT_VERSION
-from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv
+from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update
 from pdxModTool.client import Client
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
@@ -41,12 +43,17 @@ def recv(args):
     client.connect(args.server_ip, args.port)
     update_dlc_load(client.game, client.desc_paths)
 
+def update(args):
+    subprocess.check_call([sys.executable, '-m', 'pipx', 'upgrade', '--spec',
+                           f'git+https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool', 'pdxModTool'])
+
 
 def main():
     parser_build.set_defaults(func=build)
     parser_install.set_defaults(func=install)
     parser_send.set_defaults(func=send)
     parser_recv.set_defaults(func=recv)
+    parser_update.set_defaults(func=update)
 
     args = parser.parse_args()
     if args.debug:

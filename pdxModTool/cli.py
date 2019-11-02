@@ -25,7 +25,10 @@ parser_recv = subparsers.add_parser(
     'recv',
     help='receive mods from server.'
 )
-
+parser_update = subparsers.add_parser(
+    'update',
+    help='update to latest version of pdxModTool from github.'
+)
 # version argument for main parser
 parser.add_argument(
     '-v', '--version',
@@ -115,4 +118,14 @@ parser_recv.add_argument(
     action='store',
     type=int,
     help='set server port. default=65432.'
+)
+
+# update arguments
+parser_update.add_argument(
+    '-b', '--branch',
+    metavar='',
+    action='store',
+    default='',
+    type=str,
+    help='set branch. e.g. "@branch-name"'
 )
