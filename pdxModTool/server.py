@@ -42,9 +42,10 @@ class Server:
                 # conn.daemon = True
                 # conn.start()
             except KeyboardInterrupt:
-                break
+                logging.info('KeyboardInterrupt: server terminating')
             finally:
                 self.close()
+                break
 
     def handle(self, client_socket: socket.socket, addr):
         logging.info(f'client connected from {addr}')
