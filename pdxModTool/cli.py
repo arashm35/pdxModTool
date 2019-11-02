@@ -26,6 +26,13 @@ parser_recv = subparsers.add_parser(
     help='receive mods from server.'
 )
 
+# version argument for main parser
+parser.add_argument(
+    '-v', '--version',
+    action='store_true',
+    help='show version'
+)
+
 # build arguments
 parser_build.add_argument(
     '-p', '--path',

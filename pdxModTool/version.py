@@ -1,0 +1,2 @@
+CURRENT_VERSION = 0.96
+VERSION_NAME = 'server-client'

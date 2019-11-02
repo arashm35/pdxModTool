@@ -1,10 +1,12 @@
 import logging
 
+from pdxModTool import CURRENT_VERSION
 from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv
 from pdxModTool.client import Client
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
 from pdxModTool.util import get_mod_dir, get_enabled_mod_paths
+from pdxModTool.version import VERSION_NAME
 
 
 def build(args):
@@ -48,8 +50,14 @@ def main():
     parser_recv.set_defaults(func=recv)
 
     args = parser.parse_args()
+    if args.version:
+        logging.info(f'pdxModTool v{CURRENT_VERSION} "{VERSION_NAME}"')
 
-    args.func(args)
+    try:
+        args.func(args)
+    except AttributeError:
+        if not args.version:
+            parser.parse_args(['-h'])
 
 
 if __name__ == '__main__':

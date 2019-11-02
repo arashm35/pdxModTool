@@ -1,5 +1,7 @@
 from setuptools import setup
 
+from pdxModTool import version
+
 setup(
     entry_points={
         'console_scripts': [
@@ -7,7 +9,7 @@ setup(
         ],
     },
     name='pdxModTool',
-    version='0.95',
+    version=version,
     packages=['pdxModTool'],
     url='',
     license='',
