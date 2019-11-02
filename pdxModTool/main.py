@@ -1,4 +1,6 @@
 import logging
+import os
+import pathlib
 import subprocess
 
 from pdxModTool import CURRENT_VERSION
@@ -45,6 +47,7 @@ def recv(args):
 
 def update(args):
     try:
+        os.chdir((pathlib.Path().home() / '.local').as_posix())
         subprocess.run(
             [
                 'python.exe', '-m', 'pipx', 'upgrade', '--spec',
