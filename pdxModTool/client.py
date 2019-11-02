@@ -45,7 +45,7 @@ class Client:
         size_header = self.get_header()
         logging.debug(f'received file header: {name_header, size_header}')
 
-        path: pathlib.Path = get_mod_dir(self.game) / name_header.strip()
+        path: pathlib.Path = get_mod_dir(self.game) / 'down' / name_header.strip()
         logging.debug(f'download file to {path}')
 
         progress = tqdm(range(int(size_header)), f"Receiving {name_header}", unit="B", unit_scale=True,
