@@ -49,7 +49,7 @@ def update(args):
     venv_path = pathlib.Path(sys.executable)
     uri = f'https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool'
     print(venv_path)
-    subprocess.Popen([venv_path.as_posix(), '-m', 'pip', 'install', '-U', '-e', f'git+{uri}'])
+    subprocess.run([venv_path.as_posix(), '-m', 'pip', 'install', '-U', '-e', f'git+{uri}'])
 
 
 def main():
