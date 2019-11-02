@@ -1,7 +1,5 @@
 import logging
-import os
 import subprocess
-import sys
 
 from pdxModTool import CURRENT_VERSION
 from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update
@@ -48,7 +46,6 @@ def recv(args):
 def update(args):
     subprocess.check_call(['pipx', 'upgrade', '--spec',
                            f'git+https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool', 'pdxModTool'])
-    os.execv(sys.executable, sys.argv)
 
 
 def main():
