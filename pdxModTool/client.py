@@ -32,7 +32,7 @@ class Client:
 
     def __make_connection(self):
         header = self.get_header().strip()
-        logging.debug(f'received header: {header}')
+        logging.debug(f'received header: {header.strip()}')
         count, self.game = header.split(config.SEPARATOR)
 
         for i in range(int(count)):
@@ -43,7 +43,7 @@ class Client:
     def __receive_file(self):
         name_header = self.get_header()
         size_header = self.get_header()
-        logging.debug(f'received file header: {name_header, size_header}')
+        logging.debug(f'received file header: {name_header.strip(), size_header.strip()}')
 
         path: pathlib.Path = get_mod_dir(self.game) / name_header.strip()
         if path.exists():

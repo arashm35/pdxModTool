@@ -1,4 +1,5 @@
 import json
+import logging
 import pathlib
 import re
 
@@ -36,6 +37,7 @@ def get_mod_dir(game):
 
 
 def update_dlc_load(game, desc_paths):
+    logging.info(f'enabling {desc_paths} for {game}')
     dlc_load_path = get_game_dir(game) / 'dlc_load.json'
     with dlc_load_path.open('r') as json_file:
         dlc_load = json.load(json_file)

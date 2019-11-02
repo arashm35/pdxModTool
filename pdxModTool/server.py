@@ -70,13 +70,13 @@ class Server:
         logging.debug(f'send file header: {name_header, size_header}')
         client_socket.sendall(name_header + size_header)  # TODO: potential fuck up, separate
 
-        progress = tqdm(range(int(size_header)), f"Sending {path.as_posix()}", unit='B', unit_scale=True,
+        progress = tqdm(range(int(size_header)), f"Sending {path.name}", unit='B', unit_scale=True,
                         unit_divisor=1024)
-        size = int(size_header)
-        size_sent = 0
+        # size = int(size_header)
+        # size_sent = 0
         with path.open('rb') as outFile:
             for _ in progress:
-                buffer_size = config.BUFFER_SIZE if config.BUFFER_SIZE < size - size_sent else size - size_sent
+                # buffer_size = config.BUFFER_SIZE if config.BUFFER_SIZE < size - size_sent else size - size_sent
                 # if size_sent == size:
                 #     break
                 bytes_read = outFile.read(config.BUFFER_SIZE)

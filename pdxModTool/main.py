@@ -39,7 +39,6 @@ def send(args):
 def recv(args):
     client = Client()
     client.connect(args.server_ip, args.port)
-    # print(client.desc_paths)
     update_dlc_load(client.game, client.desc_paths)
 
 
