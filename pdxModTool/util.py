@@ -73,5 +73,6 @@ def get_enabled_mod_paths(game):
     return paths
 
 
-def make_header(msg):
-    return f'{msg:<{config.HEADER_SIZE}}'
+def make_header(*args):
+    msg = f'{config.SEPARATOR}'.join(list(map(str, args)))
+    return f'{msg:<{config.HEADER_SIZE}}'.encode()
