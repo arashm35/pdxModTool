@@ -49,7 +49,8 @@ def update(args):
             [
                 'python.exe', '-m', 'pipx', 'upgrade', '--spec',
                 f'git+https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool', 'pdxModTool'
-            ]
+            ],
+            shell=True
         )
     except subprocess.CalledProcessError:
         return
