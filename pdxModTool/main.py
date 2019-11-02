@@ -48,13 +48,17 @@ def recv(args):
 
 def update(args):
     try:
+        venv_dir = pathlib.Path().home() / '.local/pipx/venvs/pdxModTool/Scripts'
         subprocess.Popen(
             [
-                'python.exe', '-m', 'pipx', 'upgrade', '--spec',
+                'python.exe', '-m',
+                'pipx', 'upgrade', '--spec',
                 f'git+https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool', 'pdxModTool'
             ],
-            cwd=pathlib.Path(sys.executable).parent,
-            executable=sys.executable,
+            # cwd=pathlib.Path(sys.executable).parent,
+            # executable=sys.executable,
+            cwd=venv_dir.as_posix(),
+            executable=(venv_dir / 'python.exe').as_posix(),
             shell=True
         )
     except subprocess.CalledProcessError:
