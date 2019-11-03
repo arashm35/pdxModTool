@@ -2,6 +2,7 @@ import json
 import logging
 import pathlib
 import re
+import zipfile
 
 from pdxModTool import config
 from pdxModTool.exceptions import ModFolderNotFound
@@ -74,7 +75,7 @@ def get_mod_path(game, desc_path: pathlib.Path):
     raise FileNotFoundError
 
 
-def get_enabled_mod_paths(game):
+def get_enabled_mod_paths(game, ordered=False):
     enabled_mods_desc = get_enabled_mods_desc(game)
     game_dir = get_game_dir(game)
     paths = []
@@ -85,8 +86,11 @@ def get_enabled_mod_paths(game):
             mod_path = get_mod_path(game, desc_path)
         except FileNotFoundError:
             continue
-        paths.append(desc_path)
-        paths.append(mod_path)
+        if ordered:
+            paths.append((desc_path, mod_path))
+        else:
+            paths.append(desc_path)
+            paths.append(mod_path)
 
     return paths
 
@@ -94,3 +98,11 @@ def get_enabled_mod_paths(game):
 def make_header(*args):
     msg = f'{config.SEPARATOR}'.join(list(map(str, args)))
     return f'{msg:<{config.HEADER_SIZE}}'.encode()
+
+
+def files_from_bin(path):
+    files = []
+    with zipfile.ZipFile(path, 'r') as bin_file:
+        for file in bin_file.filelist:
+            files.append(bin_file.read(file))
+    return files

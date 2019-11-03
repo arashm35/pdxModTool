@@ -1,12 +1,13 @@
 import logging
+import pathlib
 import subprocess
 
 from pdxModTool import CURRENT_VERSION
-from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update
+from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update, parser_mkLocal
 from pdxModTool.client import Client
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
-from pdxModTool.util import get_mod_dir, get_enabled_mod_paths, update_dlc_load
+from pdxModTool.util import get_mod_dir, get_enabled_mod_paths, update_dlc_load, files_from_bin
 from pdxModTool.version import VERSION_NAME
 
 
@@ -56,12 +57,52 @@ def update(args):
         return
 
 
+def mk_local(args):
+    # # get all none descriptor files for enabled mods
+    # mods = list(filter(lambda x: x.suffix != '.mod', get_enabled_mod_paths(args.game)))
+    # # remove all local mods from list
+    # mods = list(filter(lambda x: x.parent.name != 'mod', mods))
+    # logging.info(f'making local copies for {len(mods)} mods')
+    # for path in mods:
+    #     print(path)
+    #     if path.is_dir():
+    #         mod = PDXMod()
+    #         mod.read_from_dir(path)
+    #         mod.build(get_mod_dir(args.game), desc=True, backup=True)
+
+    mods = get_enabled_mod_paths(args.game, ordered=True)
+    mods = list(filter(lambda x: x[1].parent.name != 'mod', mods))
+    end_descriptors = list(filter(lambda x: x.suffix == '.mod', get_enabled_mod_paths(args.game)))
+    end_descriptors = list(filter(lambda x: x not in [m[0] for m in mods], end_descriptors))
+    logging.info(f'making local copies for {len(mods)} mods')
+    for item in mods:
+        desc_path, src_path = item
+        src_path: pathlib.Path
+        desc_path: pathlib.Path
+
+        if src_path.is_dir():
+            mod = PDXMod()
+            mod.read_from_dir(src_path)
+            desc_path = mod.build(get_mod_dir(args.game), desc=True, backup=args.backup)
+
+        if src_path.suffix == '.bin':
+            mod = PDXMod()
+            mod.read_from_bin(src_path)
+            desc_path = mod.build(get_mod_dir(args.game), desc=True, backup=args.backup)
+
+        if desc_path:
+            end_descriptors.append(desc_path)
+
+    # update_dlc_load(args.game, end_descriptors)
+
+
 def main():
     parser_build.set_defaults(func=build)
     parser_install.set_defaults(func=install)
     parser_send.set_defaults(func=send)
     parser_recv.set_defaults(func=recv)
     parser_update.set_defaults(func=update)
+    parser_mkLocal.set_defaults(func=mk_local)
 
     args = parser.parse_args()
     if args.debug:
