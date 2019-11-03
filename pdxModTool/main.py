@@ -86,7 +86,8 @@ def mk_local(args):
         if desc_path:
             end_descriptors.append(desc_path)
 
-    # update_dlc_load(args.game, end_descriptors)
+    end_descriptors = list(f'{desc.parent.name}/{desc.name}' for desc in end_descriptors)
+    update_dlc_load(args.game, end_descriptors)
 
 
 def main():
