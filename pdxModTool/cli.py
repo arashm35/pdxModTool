@@ -50,7 +50,7 @@ parser_recv.add_argument('server_ip', metavar='server_ip', action='store', help=
 parser_recv.add_argument('-p', '--port', metavar='', action='store', type=int, help='set server port. default=65432.')
 
 # update arguments
-parser_update.add_argument('branch', metavar='branch', action='store', default='', type=str, required=False,
+parser_update.add_argument('-branch', metavar='branch', action='store', default='', type=str, required=False,
                            help='set branch. e.g. "@branch-name"')
 
 # mkLocal arguments
