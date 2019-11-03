@@ -1,2 +1,2 @@
-CURRENT_VERSION = 0.9774
-VERSION_NAME = 'server-client'
+CURRENT_VERSION = 0.98
+VERSION_NAME = 'self-update'

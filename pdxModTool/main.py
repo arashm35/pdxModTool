@@ -1,6 +1,7 @@
 import logging
 import pathlib
 import subprocess
+import sys
 
 from pdxModTool import CURRENT_VERSION
 from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update, parser_mkLocal
@@ -45,16 +46,8 @@ def recv(args):
 
 
 def update(args):
-    try:
-        subprocess.run(
-            [
-                'python.exe', '-m', 'pipx', 'upgrade', '--spec',
-                f'git+https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool', 'pdxModTool'
-            ],
-            shell=True
-        )
-    except subprocess.CalledProcessError:
-        return
+    uri = f'https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool'
+    subprocess.run([sys.executable, '-m', 'pip', 'install', '-U', '-e', f'git+{uri}'])
 
 
 def mk_local(args):
