@@ -1,2 +1,2 @@
-CURRENT_VERSION = 0.9951
-VERSION_NAME = 'handlers'
+CURRENT_VERSION = 1.0
+VERSION_NAME = 'progress bars!'

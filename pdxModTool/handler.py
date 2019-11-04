@@ -3,11 +3,19 @@ import pathlib
 import re
 from zipfile import ZipFile, ZIP_DEFLATED
 
+from tqdm import tqdm
+
 
 class BaseHandler:
 
     def __init__(self, path):
+        if not path.exists():
+            raise FileNotFoundError
+
         self.path = path
+
+    def __repr__(self):
+        return f'{type(self).__name__}({self.path})'
 
     def get_descriptor(self):
         raise NotImplementedError
@@ -23,10 +31,17 @@ class BaseHandler:
 
     @staticmethod
     def build(mod_path, data):
+        progress = tqdm(f'packing "{mod_path.name}"', total=sum(map(lambda x: len(x[1]), data)), unit='B',
+                        unit_scale=True, unit_divisor=1024)
+
         with ZipFile(mod_path, 'w', ZIP_DEFLATED) as zipFile:
-            for file in data:
-                zip_info, bytes_data = file
-                zipFile.writestr(zip_info.as_posix(), bytes_data)
+            for zip_info, bytes_data in data:
+                if type(zip_info) == pathlib.WindowsPath:
+                    zip_info = zip_info.as_posix()
+                # logging.debug(f'writing {len(bytes_data) / 1000}kb as {zip_info}')
+                zipFile.writestr(zip_info, bytes_data)
+                progress.update(len(bytes_data))
+            progress.close()
 
     def close(self):
         raise NotImplementedError

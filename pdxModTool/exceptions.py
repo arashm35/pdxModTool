@@ -6,3 +6,7 @@ class ModFolderNotFound(Exception):
 
 class ModArchiveNotFound(Exception):
     pass
+
+
+class HandlerDescriptorError(Exception):
+    pass

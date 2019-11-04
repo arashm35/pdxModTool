@@ -5,6 +5,7 @@ import sys
 
 from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update, parser_mkLocal
 from pdxModTool.client import Client
+from pdxModTool.exceptions import HandlerDescriptorError
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
 from pdxModTool.util import get_mod_dir, get_enabled_mod_paths, update_dlc_load
@@ -52,11 +53,15 @@ def mk_local(args):
     for desc_path, src_path in mods:
         src_path: pathlib.Path
         desc_path: pathlib.Path
+        logging.debug(f'making local of {src_path}, {desc_path}')
 
-        with PDXMod(src_path) as mod:
-            mod.build(get_mod_dir(args.game), desc=True, backup=args.backup)
-            desc_path = get_mod_dir(args.game) / f'{mod.name}.mod'
-            end_descriptors.append(desc_path)
+        try:
+            with PDXMod(src_path) as mod:
+                mod.build(get_mod_dir(args.game), desc=True, backup=args.backup)
+                desc_path = get_mod_dir(args.game) / f'{mod.name}.mod'
+                end_descriptors.append(desc_path)
+        except FileNotFoundError:
+            logging.error(f'Could not make copy of {src_path}')
 
     end_descriptors = list(f'{desc.parent.name}/{desc.name}' for desc in end_descriptors)
     update_dlc_load(args.game, end_descriptors)
@@ -81,7 +86,11 @@ def main():
         logging.info(f'pdxModTool v{CURRENT_VERSION} "{VERSION_NAME}"')
         return
 
-    args.func(args)
+    try:
+        args.func(args)
+    except KeyboardInterrupt:
+        logging.warning(f'KeyboardInterrupt')
+        quit()
 
 
 if __name__ == '__main__':

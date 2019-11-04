@@ -7,7 +7,8 @@ from pdxModTool.util import make_backup
 class PDXMod:
     HANDLER = {
         lambda x: x.is_dir(): PathHandler,
-        lambda x: x.suffix == '.bin': BinHandler
+        lambda x: x.suffix == '.bin': BinHandler,
+        lambda x: x.suffix == '.zip': BinHandler
     }
 
     def __init__(self, src_path):
@@ -19,6 +20,7 @@ class PDXMod:
         self.data = []
 
     def __enter__(self):
+        logging.debug(f'calling PDXMod.__enter__')
         for condition, handler in self.HANDLER.items():
             if condition(self.path):
                 self.handler = handler(self.path)
@@ -36,6 +38,7 @@ class PDXMod:
             make_backup(mod_path)
 
         logging.info(f'building {self.name} to {mod_path}')
+        logging.debug(f'handler = {self.handler}')
         self.handler.build(mod_path, self.data)
 
         if desc:
