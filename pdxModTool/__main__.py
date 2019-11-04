@@ -71,12 +71,15 @@ def main():
     parser_mkLocal.set_defaults(func=mk_local)
 
     args = parser.parse_args()
+
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
+
     if args.version:
         logging.info(f'pdxModTool v{CURRENT_VERSION} "{VERSION_NAME}"')
+        return
 
     args.func(args)
 
