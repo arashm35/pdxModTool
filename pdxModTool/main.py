@@ -8,26 +8,23 @@ from pdxModTool.cli import parser, parser_build, parser_install, parser_send, pa
 from pdxModTool.client import Client
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
-from pdxModTool.util import get_mod_dir, get_enabled_mod_paths, update_dlc_load, files_from_bin
+from pdxModTool.util import get_mod_dir, get_enabled_mod_paths, update_dlc_load
 from pdxModTool.version import VERSION_NAME
 
 
 def build(args):
     output_dir = args.output if args.output else args.path
-    mod = PDXMod()
-    if args.path.exists:
-        mod.read_from_dir(args.path)
+
+    with PDXMod(args.path) as mod:
+        mod.build(output_dir, desc=args.descriptor)
 
     mod.build(output_dir, desc=args.descriptor)
 
 
 def install(args):
-    mod = PDXMod()
-    if args.path.exists:
-        mod.read_from_dir(args.path)
-
-    mod_dir = get_mod_dir(args.game)
-    mod.build(mod_dir, desc=True, backup=args.backup)
+    output_dir = get_mod_dir(args.game)
+    with PDXMod(args.path) as mod:
+        mod.build(output_dir, desc=True, backup=args.backup)
 
 
 def send(args):
@@ -51,39 +48,18 @@ def update(args):
 
 
 def mk_local(args):
-    # # get all none descriptor files for enabled mods
-    # mods = list(filter(lambda x: x.suffix != '.mod', get_enabled_mod_paths(args.game)))
-    # # remove all local mods from list
-    # mods = list(filter(lambda x: x.parent.name != 'mod', mods))
-    # logging.info(f'making local copies for {len(mods)} mods')
-    # for path in mods:
-    #     print(path)
-    #     if path.is_dir():
-    #         mod = PDXMod()
-    #         mod.read_from_dir(path)
-    #         mod.build(get_mod_dir(args.game), desc=True, backup=True)
-
     mods = get_enabled_mod_paths(args.game, ordered=True)
     mods = list(filter(lambda x: x[1].parent.name != 'mod', mods))
     end_descriptors = list(filter(lambda x: x.suffix == '.mod', get_enabled_mod_paths(args.game)))
     end_descriptors = list(filter(lambda x: x not in [m[0] for m in mods], end_descriptors))
     logging.info(f'making local copies for {len(mods)} mods')
-    for item in mods:
-        desc_path, src_path = item
+    for desc_path, src_path in mods:
         src_path: pathlib.Path
         desc_path: pathlib.Path
 
-        if src_path.is_dir():
-            mod = PDXMod()
-            mod.read_from_dir(src_path)
-            desc_path = mod.build(get_mod_dir(args.game), desc=True, backup=args.backup)
-
-        if src_path.suffix == '.bin':
-            mod = PDXMod()
-            mod.read_from_bin(src_path)
-            desc_path = mod.build(get_mod_dir(args.game), desc=True, backup=args.backup)
-
-        if desc_path:
+        with PDXMod(src_path) as mod:
+            mod.build(get_mod_dir(args.game), desc=True, backup=args.backup)
+            desc_path = get_mod_dir(args.game) / f'{mod.name}.mod'
             end_descriptors.append(desc_path)
 
     end_descriptors = list(f'{desc.parent.name}/{desc.name}' for desc in end_descriptors)
