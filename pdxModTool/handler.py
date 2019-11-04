@@ -21,11 +21,12 @@ class BaseHandler:
     def get_data(self):
         raise NotImplementedError
 
-    def build(self, mod_path, data):
+    @staticmethod
+    def build(mod_path, data):
         with ZipFile(mod_path, 'w', ZIP_DEFLATED) as zipFile:
             for file in data:
-                zip_info, data = file
-                zipFile.write(zip_info, data)
+                zip_info, bytes_data = file
+                zipFile.writestr(zip_info.as_posix(), bytes_data)
 
     def close(self):
         raise NotImplementedError
@@ -48,6 +49,7 @@ class PathHandler(BaseHandler):
         paths = list(pathlib.Path(p) for p in self.path.glob('**/*'))
         paths = list(filter(lambda x: not any(i in x.parts for i in self.IGNORE), paths))
         paths = list(filter(lambda x: x.suffix != '.zip', paths))
+        paths = list(filter(lambda x: not x.is_dir(), paths))
         data = []
         for path in paths:
             with path.open('rb') as file:
@@ -65,7 +67,11 @@ class BinHandler(BaseHandler):
         self.binFile = ZipFile(path, 'r')
 
     def get_descriptor(self):
-        return self.binFile.read('descriptor.mod').decode()
+        desc = ''
+        for line in self.binFile.read('descriptor.mod').decode().splitlines():
+            if not line.startswith('archive='):
+                desc += f'{line}\n'
+        return desc
 
     def get_data(self):
         data = []

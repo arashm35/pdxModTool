@@ -19,13 +19,15 @@ class PDXMod:
         self.data = []
 
     def __enter__(self):
-        for condition, handler in self.HANDLER:
+        for condition, handler in self.HANDLER.items():
             if condition(self.path):
                 self.handler = handler(self.path)
+                break
 
         self.descriptor = self.handler.get_descriptor()
         self.name = self.handler.get_name(self.descriptor)
         self.data = self.handler.get_data()
+        return self
 
     def build(self, mod_dir, desc=False, backup=False):
         mod_path = mod_dir / f'{self.name}.zip'
@@ -34,7 +36,7 @@ class PDXMod:
             make_backup(mod_path)
 
         logging.info(f'building {self.name} to {mod_path}')
-        self.handler.build(mod_path,"" self.data)
+        self.handler.build(mod_path, self.data)
 
         if desc:
             desc_path = mod_dir / f'{self.name}.mod'

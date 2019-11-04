@@ -3,22 +3,18 @@ import pathlib
 import subprocess
 import sys
 
-from pdxModTool import CURRENT_VERSION
 from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update, parser_mkLocal
 from pdxModTool.client import Client
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
 from pdxModTool.util import get_mod_dir, get_enabled_mod_paths, update_dlc_load
-from pdxModTool.version import VERSION_NAME
+from pdxModTool.version import VERSION_NAME, CURRENT_VERSION
 
 
 def build(args):
     output_dir = args.output if args.output else args.path
-
     with PDXMod(args.path) as mod:
         mod.build(output_dir, desc=args.descriptor)
-
-    mod.build(output_dir, desc=args.descriptor)
 
 
 def install(args):
@@ -82,11 +78,7 @@ def main():
     if args.version:
         logging.info(f'pdxModTool v{CURRENT_VERSION} "{VERSION_NAME}"')
 
-    try:
-        args.func(args)
-    except AttributeError:
-        if not args.version:
-            parser.parse_args(['-h'])
+    args.func(args)
 
 
 if __name__ == '__main__':
