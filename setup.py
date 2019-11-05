@@ -5,7 +5,7 @@ from pdxModTool import version
 setup(
     entry_points={
         'console_scripts': [
-            'pdxModTool=pdxModTool.__main__:main',  # command=package.module:function
+            'pdxmodtool=pdxModTool.__main__:main',  # command=package.module:function
         ],
     },
     name='pdxModTool',

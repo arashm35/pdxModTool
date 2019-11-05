@@ -70,6 +70,7 @@ def mk_local(args):
 
 
 def main():
+    parser.set_defaults(func=lambda _: parser.print_help())
     parser_build.set_defaults(func=build)
     parser_install.set_defaults(func=install)
     parser_send.set_defaults(func=send)
@@ -88,9 +89,9 @@ def main():
         logging.info(f'pdxModTool v{CURRENT_VERSION} "{VERSION_NAME}"')
         return
 
-    if len(vars(args)) <= 2:
-        parser.print_help()
-        return
+    # if len(vars(args)) <= 2:
+    #     parser.print_help()
+    #     return
 
     try:
         args.func(args)
