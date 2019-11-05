@@ -24,19 +24,22 @@ class BaseHandler:
         logging.error(f'name not found in {self.path}')
         raise LookupError
 
-    @staticmethod
-    def build(mod_path, data):
-        progress = tqdm(f'packing "{mod_path.name}"', total=sum(map(lambda x: len(x[1]), data)), unit='B',
-                        unit_scale=True, unit_divisor=1024)
-
-        with ZipFile(mod_path, 'w', ZIP_DEFLATED) as zipFile:
-            for zip_info, bytes_data in data:
-                if type(zip_info) == pathlib.WindowsPath:
-                    zip_info = zip_info.as_posix()
-
-                # logging.debug(f'writing {len(bytes_data) / 1000}kb as {zip_info}')
-                zipFile.writestr(zip_info, bytes_data)
-                progress.update(len(bytes_data))
+    def build(self, path):
+        progress = tqdm(f'packing "{path.name}"', total=self.size, unit='B', unit_scale=True,
+                        unit_divisor=1024)
+        try:
+            with ZipFile(path, 'w', ZIP_DEFLATED) as zipFile:
+                for info, bytes_data in self.data:
+                    if type(info) == pathlib.WindowsPath:
+                        info = info.as_posix()
+                    # logging.debug(f'writing {len(bytes_data) / 1000}kb as {zip_info}')
+                    zipFile.writestr(info, bytes_data)
+                    progress.update(len(bytes_data))
+        except FileNotFoundError as e:
+            logging.error(f'{e}: invalid write path: {path}')
+        except PermissionError as e:
+            logging.error(f'writing and reading on same path: {path}')
+        finally:
             progress.close()
 
     def get_descriptor(self):
@@ -45,7 +48,8 @@ class BaseHandler:
     def get_size(self):
         raise NotImplementedError
 
-    def get_data(self):
+    @property
+    def data(self):
         raise NotImplementedError
 
     def close(self):
@@ -80,14 +84,14 @@ class PathHandler(BaseHandler):
     def get_size(self):
         return sum(map(lambda x: x.stat().st_size, self.src_paths))
 
-    def get_data(self):
-        data = []
+    @property
+    def data(self):
         for path in self.src_paths:
             with path.open('rb') as file:
-                data.append((path.relative_to(self.path), file.read()))
-        return data
+                yield path.relative_to(self.path), file.read()
 
     def close(self):
+        self.src_paths = None
         return
 
 
@@ -108,11 +112,10 @@ class BinHandler(BaseHandler):
     def get_size(self):
         return sum(map(lambda x: x.file_size, self.binFile.infolist()))
 
-    def get_data(self):
-        data = []
+    @property
+    def data(self):
         for file in self.binFile.filelist:
-            data.append((file, self.binFile.read(file)))
-        return data
+            yield file, self.binFile.read(file)
 
     def close(self):
         self.binFile.close()
