@@ -114,8 +114,8 @@ class BinHandler(BaseHandler):
 
     @property
     def data(self):
-        for file in self.binFile.filelist:
-            yield file, self.binFile.read(file)
+        for zip_info in self.binFile.filelist:
+            yield zip_info, self.binFile.read(zip_info)
 
     def close(self):
         self.binFile.close()

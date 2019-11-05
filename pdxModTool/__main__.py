@@ -14,8 +14,11 @@ from pdxModTool.version import VERSION_NAME, CURRENT_VERSION
 
 def build(args):
     output_dir = args.output if args.output else args.path
-    with PDXMod(args.path) as mod:
-        mod.build(output_dir, desc=args.descriptor)
+    try:
+        with PDXMod(args.path) as mod:
+            mod.build(output_dir, desc=args.descriptor)
+    except FileNotFoundError as e:
+        logging.error(f'{e}: mod source not found: {args.path}')
 
 
 def install(args):

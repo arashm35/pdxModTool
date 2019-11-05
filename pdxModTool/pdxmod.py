@@ -29,7 +29,7 @@ class PDXMod:
         return self
 
     def build(self, mod_dir, desc=False, backup=False):
-        mod_path = (mod_dir / self.name).with_suffix('.zip')
+        mod_path = (mod_dir / self.name).with_suffix('.zip') if mod_dir.is_dir() else mod_dir.with_suffix('.zip')
 
         if backup and mod_path.exists():
             make_backup(mod_path)
