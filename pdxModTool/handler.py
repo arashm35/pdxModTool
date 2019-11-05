@@ -13,21 +13,16 @@ class BaseHandler:
             raise FileNotFoundError
 
         self.path = path
+        self.size = None
 
     def __repr__(self):
         return f'{type(self).__name__}({self.path})'
-
-    def get_descriptor(self):
-        raise NotImplementedError
 
     def get_name(self, desc):
         if match := re.search(r'name="(.*)"', desc):
             return match.group(1)
         logging.error(f'name not found in {self.path}')
         raise LookupError
-
-    def get_data(self):
-        raise NotImplementedError
 
     @staticmethod
     def build(mod_path, data):
@@ -38,10 +33,20 @@ class BaseHandler:
             for zip_info, bytes_data in data:
                 if type(zip_info) == pathlib.WindowsPath:
                     zip_info = zip_info.as_posix()
+
                 # logging.debug(f'writing {len(bytes_data) / 1000}kb as {zip_info}')
                 zipFile.writestr(zip_info, bytes_data)
                 progress.update(len(bytes_data))
             progress.close()
+
+    def get_descriptor(self):
+        raise NotImplementedError
+
+    def get_size(self):
+        raise NotImplementedError
+
+    def get_data(self):
+        raise NotImplementedError
 
     def close(self):
         raise NotImplementedError
@@ -49,6 +54,18 @@ class BaseHandler:
 
 class PathHandler(BaseHandler):
     IGNORE = {'.git', '.gitattributes'}
+
+    def __init__(self, path):
+        super(PathHandler, self).__init__(path)
+        self.src_paths = self.get_paths()
+        self.size = self.get_size()
+
+    def get_paths(self):
+        paths = list(pathlib.Path(p) for p in self.path.glob('**/*'))
+        paths = list(filter(lambda x: not any(i in x.parts for i in self.IGNORE), paths))
+        paths = list(filter(lambda x: x.suffix != '.zip', paths))
+        paths = list(filter(lambda x: not x.is_dir(), paths))
+        return paths
 
     def get_descriptor(self):
         desc_path = self.path / 'descriptor.mod'
@@ -60,13 +77,12 @@ class PathHandler(BaseHandler):
         with desc_path.open('r') as desc_file:
             return desc_file.read()
 
+    def get_size(self):
+        return sum(map(lambda x: x.stat().st_size, self.src_paths))
+
     def get_data(self):
-        paths = list(pathlib.Path(p) for p in self.path.glob('**/*'))
-        paths = list(filter(lambda x: not any(i in x.parts for i in self.IGNORE), paths))
-        paths = list(filter(lambda x: x.suffix != '.zip', paths))
-        paths = list(filter(lambda x: not x.is_dir(), paths))
         data = []
-        for path in paths:
+        for path in self.src_paths:
             with path.open('rb') as file:
                 data.append((path.relative_to(self.path), file.read()))
         return data
@@ -80,6 +96,7 @@ class BinHandler(BaseHandler):
     def __init__(self, path):
         super(BinHandler, self).__init__(path)
         self.binFile = ZipFile(path, 'r')
+        self.size = self.get_size()
 
     def get_descriptor(self):
         desc = ''
@@ -87,6 +104,9 @@ class BinHandler(BaseHandler):
             if not line.startswith('archive='):
                 desc += f'{line}\n'
         return desc
+
+    def get_size(self):
+        return sum(map(lambda x: x.file_size, self.binFile.infolist()))
 
     def get_data(self):
         data = []
