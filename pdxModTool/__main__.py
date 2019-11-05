@@ -80,6 +80,10 @@ def main():
 
     args = parser.parse_args()
 
+    if len(vars(args)) <= 2:
+        parser.print_help()
+        return
+
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
     else:
