@@ -1,6 +1,6 @@
 import logging
 
-from pdxModTool.handler import PathHandler, BaseHandler, BinHandler
+from pdxModTool.handler import PathHandler, BinHandler
 from pdxModTool.util import make_backup
 
 

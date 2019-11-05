@@ -5,7 +5,6 @@ import sys
 
 from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update, parser_mkLocal
 from pdxModTool.client import Client
-from pdxModTool.exceptions import HandlerDescriptorError
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
 from pdxModTool.util import get_mod_dir, get_enabled_mod_paths, update_dlc_load
@@ -80,10 +79,6 @@ def main():
 
     args = parser.parse_args()
 
-    if len(vars(args)) <= 2:
-        parser.print_help()
-        return
-
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
     else:
@@ -91,6 +86,10 @@ def main():
 
     if args.version:
         logging.info(f'pdxModTool v{CURRENT_VERSION} "{VERSION_NAME}"')
+        return
+
+    if len(vars(args)) <= 2:
+        parser.print_help()
         return
 
     try:
