@@ -2,7 +2,6 @@ import logging
 import pathlib
 import re
 import threading
-from concurrent.futures import Future
 from concurrent.futures.thread import ThreadPoolExecutor
 from queue import Queue
 from zipfile import ZipFile, ZIP_DEFLATED, ZipInfo
@@ -33,16 +32,14 @@ class BaseHandler:
     def build(self, path):
         try:
             write_lock = threading.Lock()
-            event = threading.Event()
 
             with ZipFile(path, 'w', ZIP_DEFLATED) as zipFile:
                 progress = tqdm(f'packing "{path.name}"', total=self.size, unit='B', unit_scale=True,
                                 unit_divisor=1024)
-                with ThreadPoolExecutor() as e:
-                    self.threads.append(e.submit(self.write, write_lock, event, zipFile, progress))
+                with ThreadPoolExecutor(max_workers=2) as e:
                     for zipInfo in self.infolist:
+                        self.threads.append(e.submit(self.write, write_lock, zipFile, progress))
                         self.threads.append(e.submit(self.read, zipInfo))
-                    event.set()
 
                 while True:
                     if all(t.done for t in self.threads):
@@ -59,13 +56,11 @@ class BaseHandler:
         bytes_read = self._read(zip_info)
         self.queue.put((zip_info, bytes_read))
 
-    def write(self, lock, event, zip_file, progress):
-        while not self.queue.empty() or not event.is_set():
-            zip_info, bytes_data = self.queue.get()
-            with lock:
-                zip_file.writestr(zip_info, bytes_data)
-            progress.update(zip_info.file_size)
-
+    def write(self, lock, zip_file, progress):
+        zip_info, bytes_data = self.queue.get()
+        with lock:
+            zip_file.writestr(zip_info, bytes_data)
+        progress.update(zip_info.file_size)
 
     def get_descriptor(self):
         raise NotImplementedError
