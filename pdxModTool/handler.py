@@ -1,7 +1,11 @@
 import logging
 import pathlib
 import re
-from zipfile import ZipFile, ZIP_DEFLATED
+import threading
+from concurrent.futures import Future
+from concurrent.futures.thread import ThreadPoolExecutor
+from queue import Queue
+from zipfile import ZipFile, ZIP_DEFLATED, ZipInfo
 
 from tqdm import tqdm
 
@@ -14,6 +18,8 @@ class BaseHandler:
 
         self.path = path
         self.size = None
+        self.queue = Queue(maxsize=20)
+        self.threads = []
 
     def __repr__(self):
         return f'{type(self).__name__}({self.path})'
@@ -25,22 +31,37 @@ class BaseHandler:
         raise LookupError
 
     def build(self, path):
-        progress = tqdm(f'packing "{path.name}"', total=self.size, unit='B', unit_scale=True,
-                        unit_divisor=1024)
         try:
+            write_lock = threading.Lock()
+
             with ZipFile(path, 'w', ZIP_DEFLATED) as zipFile:
-                for info, bytes_data in self.data:
-                    if type(info) == pathlib.WindowsPath:
-                        info = info.as_posix()
-                    # logging.debug(f'writing {len(bytes_data) / 1000}kb as {zip_info}')
-                    zipFile.writestr(info, bytes_data)
-                    progress.update(len(bytes_data))
+                progress = tqdm(f'packing "{path.name}"', total=self.size, unit='B', unit_scale=True,
+                                unit_divisor=1024)
+                with ThreadPoolExecutor(max_workers=2) as e:
+                    for zipInfo in self.infolist:
+                        self.threads.append(e.submit(self.write, write_lock, zipFile, progress))
+                        self.threads.append(e.submit(self.read, zipInfo))
+
+                while True:
+                    if all(t.done for t in self.threads):
+                        break
+
         except FileNotFoundError as e:
             logging.error(f'{e}: invalid write path: {path}')
         except PermissionError as e:
             logging.error(f'writing and reading on same path: {path}')
         finally:
             progress.close()
+
+    def read(self, zip_info):
+        bytes_read = self._read(zip_info)
+        self.queue.put((zip_info, bytes_read))
+
+    def write(self, lock, zip_file, progress):
+        zip_info, bytes_data = self.queue.get()
+        with lock:
+            zip_file.writestr(zip_info, bytes_data)
+        progress.update(zip_info.file_size)
 
     def get_descriptor(self):
         raise NotImplementedError
@@ -49,7 +70,10 @@ class BaseHandler:
         raise NotImplementedError
 
     @property
-    def data(self):
+    def infolist(self):
+        raise NotImplementedError
+
+    def _read(self, zip_info):
         raise NotImplementedError
 
     def close(self):
@@ -85,10 +109,16 @@ class PathHandler(BaseHandler):
         return sum(map(lambda x: x.stat().st_size, self.src_paths))
 
     @property
-    def data(self):
+    def infolist(self):
         for path in self.src_paths:
-            with path.open('rb') as file:
-                yield path.relative_to(self.path), file.read()
+            zip_info = ZipInfo.from_file(path, arcname=path.relative_to(self.path))
+            zip_info.orig_filename = path
+            yield zip_info
+
+    def _read(self, zip_info):
+        path: pathlib.Path = zip_info.orig_filename
+        with path.open('rb') as file:
+            return file.read()
 
     def close(self):
         self.src_paths = None
@@ -113,9 +143,12 @@ class BinHandler(BaseHandler):
         return sum(map(lambda x: x.file_size, self.binFile.infolist()))
 
     @property
-    def data(self):
+    def infolist(self):
         for zip_info in self.binFile.filelist:
-            yield zip_info, self.binFile.read(zip_info)
+            yield zip_info
+
+    def _read(self, zip_info):
+        return self.binFile.read(zip_info)
 
     def close(self):
         self.binFile.close()
