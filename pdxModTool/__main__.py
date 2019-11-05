@@ -66,7 +66,8 @@ def mk_local(args):
             logging.error(f'Could not make copy of {src_path}')
 
     end_descriptors = list(f'{desc.parent.name}/{desc.name}' for desc in end_descriptors)
-    update_dlc_load(args.game, end_descriptors)
+    if args.dlc_load:
+        update_dlc_load(args.game, end_descriptors)
 
 
 def main():

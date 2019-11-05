@@ -14,11 +14,11 @@ parser_install = subparsers.add_parser('install', help='install mod into game mo
 parser_send = subparsers.add_parser('send', help='send active mods on pdx game to client.')
 parser_recv = subparsers.add_parser('recv', help='receive mods from server.')
 parser_update = subparsers.add_parser('update', help='update to latest version of pdxModTool from github.')
-parser_mkLocal = subparsers.add_parser('mkLocal', help='make local copies of steamWS mods.')
+parser_mkLocal = subparsers.add_parser('mklocal', help='make local copies of steamWS mods.')
 
 # version argument for main parser
 parser.add_argument('-v', '--version', action='store_true', help='show version')
-parser.add_argument('-d', '--debug', action='store_true', help='enable debug mode')
+parser.add_argument('-debug', action='store_true', help='enable debug mode')
 
 # build arguments
 parser_build.add_argument('-p', '--path', action='store', default=pathlib.Path().cwd(), type=pathlib.Path,
@@ -56,5 +56,6 @@ parser_update.add_argument('-branch', metavar='branch', action='store', default=
 # mkLocal arguments
 parser_mkLocal.add_argument('game', metavar='game', choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'], action='store',
                             help='set pdx game title to make local copies of mods for.')
-
 parser_mkLocal.add_argument('-b', '--backup', action='store_true', help='set flag for backup.')
+
+parser_mkLocal.add_argument('--dlc_load', action='store_true', help='enabled local mods after creation.')
