@@ -25,7 +25,11 @@ class BaseHandler:
 
     def get_name(self, desc):
         if match := re.search(r'name="(.*)"', desc):
-            return match.group(1)
+            name = match.group(1)
+            name = name.lower().replace(' - ', '_')
+            name = name.replace(' ', '_')
+            name = "".join(c for c in name if c.isalnum() or c in ['.', '_']).rstrip()
+            return name
         logging.error(f'name not found in {self.path}')
         raise LookupError
 
