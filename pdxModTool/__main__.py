@@ -14,7 +14,7 @@ from pdxModTool.version import VERSION_NAME, CURRENT_VERSION
 def build(args):
     output_dir = args.output if args.output else args.path
     try:
-        with PDXMod(args.path) as mod:
+        with PDXMod(args.path, max_threads=args.threads) as mod:
             mod.build(output_dir, desc=args.descriptor)
     except FileNotFoundError as e:
         logging.error(f'{e}: mod source not found: {args.path}')
@@ -22,7 +22,7 @@ def build(args):
 
 def install(args):
     output_dir = get_mod_dir(args.game)
-    with PDXMod(args.path) as mod:
+    with PDXMod(args.path, max_threads=args.threads) as mod:
         mod.build(output_dir, desc=True, backup=args.backup)
 
 
@@ -58,7 +58,7 @@ def mk_local(args):
         logging.debug(f'making local of {src_path}, {desc_path}')
 
         try:
-            with PDXMod(src_path) as mod:
+            with PDXMod(src_path, max_threads=args.threads) as mod:
                 mod.build(get_mod_dir(args.game), desc=True, backup=args.backup)
                 desc_path = get_mod_dir(args.game) / f'{mod.name}.mod'
                 end_descriptors.append(desc_path)

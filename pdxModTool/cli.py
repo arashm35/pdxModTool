@@ -17,8 +17,10 @@ parser_update = subparsers.add_parser('update', help='update to latest version o
 parser_mkLocal = subparsers.add_parser('mklocal', help='make local copies of steamWS mods.')
 
 # version argument for main parser
-parser.add_argument('-v', '--version', action='store_true', help='show version')
-parser.add_argument('-debug', action='store_true', help='enable debug mode')
+parser.add_argument('-v', '--version', action='store_true', help='show version.')
+parser.add_argument('-debug', action='store_true', help='enable debug mode.')
+parser.add_argument('-t', '--threads', metavar='thread_count', action='store', type= int,
+                    help='set number of max threads. default: 2.')
 
 # build arguments
 parser_build.add_argument('-p', '--path', action='store', default=pathlib.Path().cwd(), type=pathlib.Path,

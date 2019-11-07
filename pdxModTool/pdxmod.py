@@ -11,9 +11,11 @@ class PDXMod:
         lambda x: x.suffix == '.zip': BinHandler
     }
 
-    def __init__(self, src_path):
+    def __init__(self, src_path, max_threads=None):
         self.path = src_path
         self.handler = None
+
+        self.max_threads = max_threads
 
         self.name = None
         self.descriptor = None
@@ -21,7 +23,7 @@ class PDXMod:
     def __enter__(self):
         for condition, handler in self.HANDLER.items():
             if condition(self.path):
-                self.handler = handler(self.path)
+                self.handler = handler(self.path, max_workers=self.max_threads)
                 break
 
         self.descriptor = self.handler.get_descriptor()

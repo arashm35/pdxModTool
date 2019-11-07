@@ -11,13 +11,15 @@ from tqdm import tqdm
 
 class BaseHandler:
 
-    def __init__(self, path):
+    def __init__(self, path, max_workers=None):
         if not path.exists():
             raise FileNotFoundError
 
         self.path = path
         self.size = None
+
         self.queue = Queue(maxsize=20)
+        self.max_workers = max_workers if max_workers else 4
         self.threads = []
 
     def __repr__(self):
@@ -40,7 +42,7 @@ class BaseHandler:
             with ZipFile(path, 'w', ZIP_DEFLATED) as zipFile:
                 progress = tqdm(f'packing "{path.name}"', total=self.size, unit='B', unit_scale=True,
                                 unit_divisor=1024)
-                with ThreadPoolExecutor(max_workers=2) as e:
+                with ThreadPoolExecutor(max_workers=self.max_workers) as e:
                     for zipInfo in self.infolist:
                         self.threads.append(e.submit(self.write, write_lock, zipFile, progress))
                         self.threads.append(e.submit(self.read, zipInfo))
@@ -86,8 +88,8 @@ class BaseHandler:
 class PathHandler(BaseHandler):
     IGNORE = {'.git', '.gitattributes'}
 
-    def __init__(self, path):
-        super(PathHandler, self).__init__(path)
+    def __init__(self, path, max_workers=None):
+        super(PathHandler, self).__init__(path, max_workers)
         self.src_paths = self.get_paths()
         self.size = self.get_size()
 
@@ -130,8 +132,8 @@ class PathHandler(BaseHandler):
 
 class BinHandler(BaseHandler):
 
-    def __init__(self, path):
-        super(BinHandler, self).__init__(path)
+    def __init__(self, path, max_workers=None):
+        super(BinHandler, self).__init__(path, max_workers)
         self.binFile = ZipFile(path, 'r')
         self.size = self.get_size()
 
