@@ -1,2 +1,2 @@
-CURRENT_VERSION = 1.103
-VERSION_NAME = 'original Threads!'
+CURRENT_VERSION = 1.001
+VERSION_NAME = 'Progress bars!'
