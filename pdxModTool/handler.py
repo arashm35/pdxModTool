@@ -40,7 +40,7 @@ class BaseHandler:
         try:
             write_lock = threading.Lock()
 
-            with ZipFile(path, 'w', ZIP_STORED) as zipFile:
+            with ZipFile(path, 'w', allowZip64=False) as zipFile:
                 progress = tqdm(f'packing "{path.name}"', total=self.size, unit='B', unit_scale=True,
                                 unit_divisor=1024)
                 with ThreadPoolExecutor(max_workers=self.max_workers) as e:
