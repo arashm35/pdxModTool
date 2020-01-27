@@ -4,7 +4,7 @@ import re
 import threading
 from concurrent.futures.thread import ThreadPoolExecutor
 from queue import Queue
-from zipfile import ZipFile, ZIP_DEFLATED, ZipInfo
+from zipfile import ZipFile, ZipInfo, ZIP_STORED
 
 from tqdm import tqdm
 
@@ -36,12 +36,11 @@ class BaseHandler:
         raise LookupError
 
     def build(self, path):
-        zip64 = True if self.size >= 4e+9 else False
 
         try:
             write_lock = threading.Lock()
 
-            with ZipFile(path, 'w', ZIP_DEFLATED, allowZip64=zip64) as zipFile:
+            with ZipFile(path, 'w', ZIP_STORED) as zipFile:
                 progress = tqdm(f'packing "{path.name}"', total=self.size, unit='B', unit_scale=True,
                                 unit_divisor=1024)
                 with ThreadPoolExecutor(max_workers=self.max_workers) as e:
