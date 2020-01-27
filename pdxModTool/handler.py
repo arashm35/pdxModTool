@@ -4,9 +4,11 @@ import re
 import threading
 from concurrent.futures.thread import ThreadPoolExecutor
 from queue import Queue
-from zipfile import ZipFile, ZipInfo, ZIP_STORED, ZIP_DEFLATED
+from zipfile import ZipInfo, ZIP_STORED
 
 from tqdm import tqdm
+
+from pdxModTool.newzipfile import ZipFile
 
 
 class BaseHandler:
@@ -40,7 +42,7 @@ class BaseHandler:
         try:
             write_lock = threading.Lock()
 
-            with ZipFile(path, 'w', compression=ZIP_DEFLATED, compresslevel=6) as zipFile:
+            with ZipFile(path, 'w') as zipFile:
                 progress = tqdm(f'packing "{path.name}"', total=self.size, unit='B', unit_scale=True,
                                 unit_divisor=1024)
                 with ThreadPoolExecutor(max_workers=self.max_workers) as e:
@@ -66,7 +68,7 @@ class BaseHandler:
     def write(self, lock, zip_file, progress):
         zip_info, bytes_data = self.queue.get()
         with lock:
-            zip_file.writestr(zip_info, bytes_data)
+            zip_file.writestr(zip_info, bytes_data, compress_type=ZIP_STORED)
         progress.update(zip_info.file_size)
 
     def get_descriptor(self):
@@ -119,9 +121,7 @@ class PathHandler(BaseHandler):
         for path in self.src_paths:
             zip_info = ZipInfo.from_file(path, arcname=path.relative_to(self.path))
             zip_info.orig_filename = path
-            zip_info.compress_type = ZIP_DEFLATED
-            zip_info._compresslevel = 6
-
+            zip_info.extract_version = 20
             yield zip_info
 
     def _read(self, zip_info):
