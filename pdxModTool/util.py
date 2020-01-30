@@ -3,6 +3,7 @@ import logging
 import pathlib
 import re
 import zipfile
+from typing.io import TextIO
 
 from pdxModTool import config
 from pdxModTool.exceptions import ModFolderNotFound
@@ -105,3 +106,15 @@ def files_from_bin(path):
         for file in bin_file.filelist:
             files.append(bin_file.read(file))
     return files
+
+
+def update_desc_archive_path(desc_path: pathlib.Path):
+    desc = []
+    with desc_path.open('r') as in_desc:
+        desc = in_desc.readlines()
+
+    idx = desc.index(*filter(lambda s: s.startswith("archive"), desc))
+    desc[idx] = '='.join(desc[idx].split('=')[0:1] + [f'"{"/".join(desc_path.parts[-2:])}"'])
+
+    with desc_path.open('w') as out_desc:
+        out_desc.writelines(desc)

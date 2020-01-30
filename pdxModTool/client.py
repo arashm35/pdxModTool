@@ -5,7 +5,7 @@ import socket
 from tqdm import tqdm
 
 from pdxModTool import config
-from pdxModTool.util import get_mod_dir, make_backup
+from pdxModTool.util import get_mod_dir, make_backup, update_desc_archive_path
 
 
 class Client:
@@ -71,6 +71,7 @@ class Client:
 
         if path.suffix == '.mod':
             self.desc_paths.append(f'mod/{path.name}')
+            update_desc_archive_path(path)
 
     def get_header(self):
         return self._local_socket.recv(config.HEADER_SIZE).decode()
