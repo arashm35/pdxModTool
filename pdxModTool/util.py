@@ -115,7 +115,7 @@ def update_desc_archive_path(desc_path: pathlib.Path):
 
     idx = desc.index(*filter(lambda s: s.startswith("archive"), desc))
     desc[idx] = '='.join(
-        desc[idx].split('=')[0:1] + [f'{pathlib.Path("/".join(desc_path.parts[-2:])).with_suffix(".zip")}"'])
+        desc[idx].split('=')[0:1] + [f'{pathlib.Path("/".join(desc_path.parts[-2:])).with_suffix(".zip")}"\n'])
 
     with desc_path.open('w') as out_desc:
         out_desc.writelines(desc)
