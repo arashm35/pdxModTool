@@ -30,7 +30,13 @@ def send(args):
     server = Server(args.game, args.ip, args.port)
 
     for path in get_enabled_mod_paths(args.game):
-        server.files.append(path)
+        if args.only:
+            if args.only == path.stem:
+                server.files.append(path)
+            else:
+                continue
+        else:
+            server.files.append(path)
     logging.info(f'preparing {len(server.files)} to send')
     server.start()
 
@@ -38,7 +44,8 @@ def send(args):
 def recv(args):
     client = Client()
     client.connect(args.server_ip, args.port)
-    update_dlc_load(client.game, client.desc_paths)
+    if args.dlc_load:
+        update_dlc_load(client.game, client.desc_paths)
 
 
 def update(args):

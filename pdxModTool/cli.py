@@ -47,9 +47,12 @@ parser_send.add_argument('-i', '--ip', metavar='', action='store', help='set ser
 
 parser_send.add_argument('-p', '--port', metavar='', action='store', type=int, help='set server port. default=65432.')
 
+parser_send.add_argument('--only', action='store', type=str, help='send only specified mod.')
+
 # recv arguments
 parser_recv.add_argument('server_ip', metavar='server_ip', action='store', help='set target server ip. ')
 parser_recv.add_argument('-p', '--port', metavar='', action='store', type=int, help='set server port. default=65432.')
+parser_recv.add_argument('--dlc_load', action='store_true', help="update dlc_load.")
 
 # update arguments
 parser_update.add_argument('-branch', metavar='branch', action='store', default='', type=str, required=False,
