@@ -15,6 +15,11 @@ parser_send = subparsers.add_parser('send', help='send active mods on pdx game t
 parser_recv = subparsers.add_parser('recv', help='receive mods from server.')
 parser_update = subparsers.add_parser('update', help='update to latest version of pdxModTool from github.')
 parser_mkLocal = subparsers.add_parser('mklocal', help='make local copies of steamWS mods.')
+parser_open = subparsers.add_parser('open', help='open mod directory of game.')
+
+# open arguments
+parser_open.add_argument('game', metavar='game', choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'], action='store',
+                         help='pdx game to open mod folder of.')
 
 # version argument for main parser
 parser.add_argument('-v', '--version', action='store_true', help='show version.')

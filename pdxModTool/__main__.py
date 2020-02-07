@@ -1,9 +1,11 @@
 import logging
+import os
 import pathlib
 import subprocess
 import sys
 
-from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update, parser_mkLocal
+from pdxModTool.cli import parser, parser_build, parser_install, parser_send, parser_recv, parser_update, \
+    parser_mkLocal, parser_open
 from pdxModTool.client import Client
 from pdxModTool.pdxmod import PDXMod
 from pdxModTool.server import Server
@@ -77,6 +79,11 @@ def mk_local(args):
         update_dlc_load(args.game, end_descriptors)
 
 
+def openGamePath(args):
+    gamePath = get_mod_dir(args.game)
+    os.startfile(gamePath)
+
+
 def main():
     parser.set_defaults(func=lambda _: parser.print_help())
     parser_build.set_defaults(func=build)
@@ -85,6 +92,7 @@ def main():
     parser_recv.set_defaults(func=recv)
     parser_update.set_defaults(func=update)
     parser_mkLocal.set_defaults(func=mk_local)
+    parser_open.set_defaults(func=openGamePath)
 
     args = parser.parse_args()
 
