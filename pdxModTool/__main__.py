@@ -39,6 +39,7 @@ def send(args):
                 continue
         else:
             server.files.append(path)
+
     logging.info(f'preparing {len(server.files)} to send')
     server.start()
 

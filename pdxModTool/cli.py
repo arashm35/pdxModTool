@@ -1,6 +1,8 @@
 import argparse
 import pathlib
 
+from pdxModTool import game_options
+
 parser = argparse.ArgumentParser(
     prog='pdxModTool',
     description='build/install pdx mods'
@@ -18,7 +20,7 @@ parser_mkLocal = subparsers.add_parser('mklocal', help='make local copies of ste
 parser_open = subparsers.add_parser('open', help='open mod directory of game.')
 
 # open arguments
-parser_open.add_argument('game', metavar='game', choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'], action='store',
+parser_open.add_argument('game', metavar='game', choices=game_options.CLI_CHOICES, action='store',
                          help='pdx game to open mod folder of.')
 
 # version argument for main parser
@@ -40,13 +42,13 @@ parser_build.add_argument('-d', '--descriptor', action='store_true', help='build
 parser_install.add_argument('-p', '--path', action='store', default=pathlib.Path().cwd(), type=pathlib.Path,
                             help='path of mod root folder.', )
 
-parser_install.add_argument('game', metavar='game', choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'], action='store',
+parser_install.add_argument('game', metavar='game', choices=game_options.CLI_CHOICES, action='store',
                             help='set pdx game title to install mods for.')
 
 parser_install.add_argument('-b', '--backup', action='store_true', help='set flag for backup.')
 
 # send arguments
-parser_send.add_argument('game', metavar='game', choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'], action='store',
+parser_send.add_argument('game', metavar='game', choices=game_options.CLI_CHOICES, action='store',
                          help='set pdx game title to send mods for.')
 parser_send.add_argument('-i', '--ip', metavar='', action='store', help='set server ip. default="0.0.0.0".')
 
@@ -64,7 +66,7 @@ parser_update.add_argument('-branch', metavar='branch', action='store', default=
                            help='set branch. e.g. "@branch-name"')
 
 # mkLocal arguments
-parser_mkLocal.add_argument('game', metavar='game', choices=['eu4', 'stellaris', 'ir', 'hoi4', 'ck2'], action='store',
+parser_mkLocal.add_argument('game', metavar='game', choices=game_options.CLI_CHOICES, action='store',
                             help='set pdx game title to make local copies of mods for.')
 parser_mkLocal.add_argument('-b', '--backup', action='store_true', help='set flag for backup.')
 

@@ -1,11 +1,9 @@
 import json
-import logging
 import pathlib
 import re
 import zipfile
-from typing.io import TextIO
 
-from pdxModTool import config
+from pdxModTool import config, game_options
 from pdxModTool.exceptions import ModFolderNotFound
 
 
@@ -23,13 +21,7 @@ def get_doc_dir():
 
 def get_game_dir(game):
     pdx_dir = get_doc_dir() / 'Paradox Interactive'
-    pdx_dict = {
-        'eu4': 'Europa Universalis IV',
-        'ir': 'Imperator',
-        'hoi4': 'Hearts of Iron IV',
-        'stellaris': 'Stellaris'
-    }
-    if (modDir := pdx_dir / pdx_dict.get(game)).exists():
+    if (modDir := pdx_dir / game_options.GAME_DIRECTORIES.get(game)).exists():
         return modDir
     raise ModFolderNotFound(game)
 
@@ -115,7 +107,8 @@ def update_desc_archive_path(desc_path: pathlib.Path):
 
     idx = desc.index(*filter(lambda s: s.startswith("archive"), desc))
     desc[idx] = '='.join(
-        desc[idx].split('=')[0:1] + [f'"{pathlib.Path("/".join(desc_path.parts[-2:])).with_suffix(".zip").as_posix()}"\n'])
+        desc[idx].split('=')[0:1] + [
+            f'"{pathlib.Path("/".join(desc_path.parts[-2:])).with_suffix(".zip").as_posix()}"\n'])
 
     with desc_path.open('w') as out_desc:
         out_desc.writelines(desc)
