@@ -24,8 +24,18 @@ def build(args):
 
 def install(args):
     output_dir = get_mod_dir(args.game)
-    with PDXMod(args.path, max_threads=args.threads) as mod:
-        mod.build(output_dir, desc=True, backup=args.backup)
+    path = pathlib.Path(args.path)
+
+    def build_mod(mod_path):
+        with PDXMod(mod_path, max_threads=args.threads) as mod:
+            mod.build(output_dir, desc=True, backup=args.backup)
+
+    if path.is_dir():
+        for path in path.iterdir():
+            if path.suffix == ".zip":
+                build_mod(path)
+    else:
+        build_mod(path)
 
 
 def send(args):
