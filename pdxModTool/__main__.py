@@ -63,7 +63,7 @@ def recv(args):
 
 def update(args):
     uri = f'https://github.com/arashm35/pdxModTool{args.branch}#egg=pdxModTool'
-    subprocess.run([sys.executable, '-m', 'pip', 'install', '-U', '-e', f'git+{uri}'])
+    subprocess.run([sys.executable, '-m', 'pip', 'install', '-U', '--user', '-e', f'git+{uri}'])
 
 
 def mk_local(args):
